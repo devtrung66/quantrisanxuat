@@ -1,4 +1,4 @@
-﻿import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { PageContainer } from "@shared/ui/layout/PageContainer";
 import { Card, DataTable, Badge, Spinner, EmptyState, Button, formatNumber } from "@shared/index";
 import type { Column } from "@shared/index";
@@ -17,7 +17,17 @@ export function ProductionOrderListPage() {
   const { data, isLoading } = useProductionOrderList();
 
   const columns: Column<ProductionOrder>[] = [
-    { key: "code", header: "Mã lệnh SX", render: (r) => <span className="font-medium text-slate-800">{r.code}</span> },
+    {
+      key: "code", header: "Mã lệnh SX",
+      render: (r) => (
+        <button
+          onClick={() => nav(`/production-orders/${r.id}`)}
+          className="font-medium text-blue-600 hover:underline"
+        >
+          {r.code}
+        </button>
+      ),
+    },
     { key: "orderCode", header: "Đơn hàng" },
     { key: "customer", header: "Khách hàng" },
     { key: "product", header: "Sản phẩm" },

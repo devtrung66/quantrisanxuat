@@ -1,4 +1,4 @@
-﻿export const ROUTES = {
+export const ROUTES = {
   dashboard: "/",
   orders: "/orders",
   productionOrders: "/production-orders",
@@ -9,6 +9,7 @@
   reports: "/reports",
   catalog: "/catalog",
   settings: "/settings",
+  workTracking: "/work-tracking",
 } as const;
 
 export const ROUTE_TITLES: Record<string, string> = {
@@ -22,4 +23,5 @@ export const ROUTE_TITLES: Record<string, string> = {
   [ROUTES.reports]: "Báo cáo",
   [ROUTES.catalog]: "Danh mục",
   [ROUTES.settings]: "Cài đặt",
+  [ROUTES.workTracking]: "Theo dõi công việc",
 };

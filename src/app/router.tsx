@@ -1,4 +1,4 @@
-﻿import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import { AppLayout } from "@shared/ui/layout/AppLayout";
 import { dashboardRoutes } from "@features/dashboard/router";
 import { orderRoutes } from "@features/orders/router";
@@ -9,6 +9,7 @@ import { stageRoutes } from "@features/stages/router";
 import { reportRoutes } from "@features/reports/router";
 import { catalogRoutes } from "@features/catalog/router";
 import { settingsRoutes } from "@features/settings/router";
+import { workTrackingRoutes } from "@features/work-tracking/router";
 
 // NotFound cho route không khớp
 function NotFound() {
@@ -35,6 +36,7 @@ export const router = createBrowserRouter([
       ...reportRoutes,
       ...catalogRoutes,
       ...settingsRoutes,
+      ...workTrackingRoutes,
       { path: "*", element: <NotFound /> },
     ],
   },

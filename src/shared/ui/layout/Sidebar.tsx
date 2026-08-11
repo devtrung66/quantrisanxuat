@@ -1,6 +1,6 @@
-﻿import {
+import {
   Globe, ClipboardList, PenSquare, Activity, Database, CheckCircle2,
-  XCircle, Layers, FileBarChart, FolderTree, Settings, ChevronLeft,
+  XCircle, Layers, FileBarChart, ClipboardCheck, FolderTree, Settings, ChevronLeft,
 } from "lucide-react";
 import { SidebarItem } from "./SidebarItem";
 import { SidebarGroup } from "./SidebarGroup";
@@ -30,6 +30,7 @@ export function Sidebar() {
 
         <SidebarItem to={ROUTES.stages} icon={<Layers className={ic} />} label="Quản lý công đoạn" />
         <SidebarItem to={ROUTES.reports} icon={<FileBarChart className={ic} />} label="Báo cáo" />
+        <SidebarItem to={ROUTES.workTracking} icon={<ClipboardCheck className={ic} />} label="Theo dõi công việc" />
 
         <SidebarGroup icon={<FolderTree className={ic} />} label="Danh mục" defaultOpen={false}>
           <SidebarItem to={ROUTES.catalog} icon={<FolderTree className="h-4 w-4" />} label="Tất cả danh mục" />
