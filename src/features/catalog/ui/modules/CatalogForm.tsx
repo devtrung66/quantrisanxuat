@@ -1,7 +1,7 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Button } from "@shared/index";
-import { productSchema, customerSchema, defectSchema } from "../../model/schemas";
-import { CATALOG_TAB, DEFECT_SEVERITY_LABEL } from "../../model/constants";
+import { productSchema, customerSchema, defectSchema, materialSchema } from "../../model/schemas";
+import { CATALOG_TAB, DEFECT_SEVERITY_LABEL, MATERIAL_UNITS } from "../../model/constants";
 import type { CatalogTab } from "../../model/constants";
 import type { CatalogItem } from "../../model/types";
 
@@ -21,6 +21,7 @@ const EMPTY: Record<CatalogTab, any> = {
   product: { code: "", name: "", unit: "", active: true },
   customer: { code: "", name: "", phone: "", address: "" },
   defect: { code: "", name: "", severity: "low" },
+  material: { code: "", name: "", unit: MATERIAL_UNITS[0], price: 0 },
 };
 
 export function CatalogForm({
@@ -37,7 +38,10 @@ export function CatalogForm({
   const set = (k: string, v: any) => setValues((s: any) => ({ ...s, [k]: v }));
 
   const submit = () => {
-    const schema = tab === CATALOG_TAB.product ? productSchema : tab === CATALOG_TAB.customer ? customerSchema : defectSchema;
+    const schema =
+      tab === CATALOG_TAB.product ? productSchema :
+      tab === CATALOG_TAB.customer ? customerSchema :
+      tab === CATALOG_TAB.defect ? defectSchema : materialSchema;
     const { id, ...payload } = values;
     const parsed = schema.safeParse(payload);
     if (!parsed.success) {
@@ -91,6 +95,19 @@ export function CatalogForm({
               {Object.entries(DEFECT_SEVERITY_LABEL).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
             </select>
           </Field>
+        )}
+
+        {tab === CATALOG_TAB.material && (
+          <>
+            <Field label="ĐVT" error={errors.unit}>
+              <select className={inputCls} value={values.unit} onChange={(e) => set("unit", e.target.value)}>
+                {MATERIAL_UNITS.map((u) => <option key={u} value={u}>{u}</option>)}
+              </select>
+            </Field>
+            <Field label="Đơn giá (đ)" error={errors.price}>
+              <input type="number" min={0} className={inputCls} value={values.price} onChange={(e) => set("price", Number(e.target.value))} />
+            </Field>
+          </>
         )}
       </div>
 

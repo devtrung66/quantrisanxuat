@@ -107,11 +107,11 @@ export function ProductionOrderDetailPage() {
             </div>
 
             <div ref={setRef(LSX_SECTION.norm)} className="scroll-mt-6 pt-10">
-              <MaterialNormTable data={norm.data} isLoading={norm.isLoading} />
+              <MaterialNormTable data={norm.data} isLoading={norm.isLoading} poId={id ?? ""} />
             </div>
 
             <div ref={setRef(LSX_SECTION.planSxct)} className="scroll-mt-6 pt-10">
-              <PlanSxctSection allocations={po.allocations} />
+              <PlanSxctSection allocations={po.allocations} poId={id ?? ""} />
             </div>
 
             <div ref={setRef(LSX_SECTION.links)} className="scroll-mt-6 pt-10">

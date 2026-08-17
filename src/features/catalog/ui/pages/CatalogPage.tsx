@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { PageContainer } from "@shared/ui/layout/PageContainer";
 import { Card, Spinner, EmptyState, Button } from "@shared/index";
 import { CATALOG_TAB, CATALOG_TAB_LABEL } from "../../model/constants";
@@ -9,8 +9,9 @@ import { CatalogTabs } from "../components/CatalogTabs";
 import { ProductTable } from "../modules/ProductTable";
 import { CustomerTable } from "../modules/CustomerTable";
 import { DefectTypeTable } from "../modules/DefectTypeTable";
+import { MaterialTable } from "../modules/MaterialTable";
 import { CatalogForm } from "../modules/CatalogForm";
-import type { CatalogItem, Product, Customer, DefectType } from "../../model/types";
+import type { CatalogItem, Product, Customer, DefectType, Material } from "../../model/types";
 
 export function CatalogPage() {
   const [tab, setTab] = useState<CatalogTab>(CATALOG_TAB.product);
@@ -61,8 +62,10 @@ export function CatalogPage() {
             <ProductTable data={data as Product[]} onEdit={setEditing} onDelete={onDelete} />
           ) : tab === CATALOG_TAB.customer ? (
             <CustomerTable data={data as Customer[]} onEdit={setEditing} onDelete={onDelete} />
-          ) : (
+          ) : tab === CATALOG_TAB.defect ? (
             <DefectTypeTable data={data as DefectType[]} onEdit={setEditing} onDelete={onDelete} />
+          ) : (
+            <MaterialTable data={data as Material[]} onEdit={setEditing} onDelete={onDelete} />
           )}
         </Card>
       </div>

@@ -10,9 +10,9 @@ export const WORKERS: Worker[] = [
   { id: "w6", name: "OANH" },
 ];
 
-// Công việc theo từng tổ. Key = team id.
+// Công việc theo từng tổ. Key = team id (7 tổ mới).
 export const WORK_DB: Record<string, WorkItem[]> = {
-  "hoan-thien": [
+  "gia-cong": [
     {
       id: "wk9", seq: 9, lsxCode: "L154",
       content: "Kiểm tra sửa chữa điều chỉnh xe chữa cháy UD để bàn giao tới khách hàng.",
@@ -29,14 +29,17 @@ export const WORK_DB: Record<string, WorkItem[]> = {
       workers: ["w1", "w3", "w4", "w5"],
       supervisorNote: "Chưa triển khai",
     },
+  ],
+  "che-tao": [
     {
-      id: "wk14", seq: 14, lsxCode: "L15",
-      content: "Thi công tháo thiết bị theo bảng kiểm phục vụ kiểm tra.\nLắp đặt thiết bị sau khi nghiệm thu đăng kiểm 31-03-2026",
-      priority: "now", status: "doing",
-      startDate: "2026-03-26", endDate: "2026-03-26",
-      workers: ["w4", "w3", "w5", "w6"],
-      evaluation: "ĐẠT ĐÚNG THỜI GIAN",
+      id: "ct1", seq: 1, lsxCode: "L305",
+      content: "Chế tạo khung xương thùng đông lạnh theo bản vẽ",
+      priority: "normal", status: "doing",
+      startDate: "2026-04-02", endDate: "2026-04-12",
+      workers: ["w1", "w5"],
     },
+  ],
+  "lap-rap": [
     {
       id: "wk15", seq: 15, lsxCode: "L221",
       content: "Thực hiện các công việc cho 03 xe:\n- Thi công lắp đặt thùng đổ\n- Thi công cản trước\n- Thi công lắp đặt đèn tìm kiếm\n- Thi công sửa cản hông\n- Lắp đặt truyền động\n- Lắp đặt bảng điều khiển\n- Giá đỡ láng sau\n- Chỉnh sửa cản sau\n- Lắp đặt sàn thao tác phía sau\n- Lắp đặt đèn hậu\n- Thi công lắp đặt lại hệ thống đường ống\n- Lắp đặt bơm mồi",
@@ -54,6 +57,37 @@ export const WORK_DB: Record<string, WorkItem[]> = {
       workers: ["w2", "w3"],
       supervisorNote: "Tính lại các phương án lắp đặt hệ thống truyền động",
     },
+  ],
+  "co-dien": [
+    {
+      id: "cd1", seq: 1, lsxCode: "L201",
+      content: "Đấu nối hệ thống điện bơm nước xe chữa cháy",
+      priority: "normal", status: "doing",
+      startDate: "2026-04-01", endDate: "2026-04-05",
+      workers: ["w2", "w3"],
+    },
+  ],
+  "son": [
+    {
+      id: "sn1", seq: 1, lsxCode: "L154",
+      content: "Sơn hoàn thiện thùng xe sau gia công",
+      priority: "urgent", status: "pending",
+      startDate: "", endDate: "",
+      workers: ["w6"],
+      supervisorNote: "Chờ tổ gia công xong phần bắn tôn",
+    },
+  ],
+  "kiem-tra": [
+    {
+      id: "wk14", seq: 14, lsxCode: "L15",
+      content: "Thi công tháo thiết bị theo bảng kiểm phục vụ kiểm tra.\nLắp đặt thiết bị sau khi nghiệm thu đăng kiểm 31-03-2026",
+      priority: "now", status: "doing",
+      startDate: "2026-03-26", endDate: "2026-03-26",
+      workers: ["w4", "w3", "w5", "w6"],
+      evaluation: "ĐẠT ĐÚNG THỜI GIAN",
+    },
+  ],
+  "ban-giao": [
     {
       id: "wk18", seq: 18, lsxCode: "L112",
       content: "Xe chữa cháy KCN Bá Thiện\n- Lắp đặt hệ thống tưới rửa đường phía đầu xe\n- Hoàn thiện lắp đặt xe",
@@ -62,27 +96,6 @@ export const WORK_DB: Record<string, WorkItem[]> = {
       workers: ["w2"],
     },
   ],
-  "to-may": [
-    {
-      id: "tm1", seq: 1, lsxCode: "L200",
-      content: "May bạt phủ thùng xe tải 5 tấn",
-      priority: "normal", status: "doing",
-      startDate: "2026-04-01", endDate: "2026-04-05",
-      workers: ["w6"],
-    },
-  ],
-  "che-tao": [],
-  "co-dien": [
-    {
-      id: "cd1", seq: 1, lsxCode: "L221",
-      content: "Đấu nối hệ thống điện đèn tìm kiếm và bảng điều khiển",
-      priority: "urgent", status: "done",
-      startDate: "2026-03-28", endDate: "2026-03-30",
-      workers: ["w5"],
-      evaluation: "ĐẠT ĐÚNG THỜI GIAN",
-    },
-  ],
-  "to-son": [],
 };
 
 export function getMockWorkItems(teamId: string): WorkItem[] {
@@ -93,21 +106,18 @@ export function getWorkerName(id: string): string {
   return WORKERS.find((w) => w.id === id)?.name ?? id;
 }
 
-// Sinh id + seq cho công việc mới
 let WSEQ = 100;
 export function nextWorkId(): string {
   WSEQ += 1;
   return `wk${WSEQ}`;
 }
 
-// Thêm 1 công việc vào tổ (mock, mất khi reload)
 export function addWorkItem(teamId: string, item: WorkItem): WorkItem {
   if (!WORK_DB[teamId]) WORK_DB[teamId] = [];
   WORK_DB[teamId].unshift(item);
   return item;
 }
 
-// Số thứ tự kế tiếp trong tổ
 export function nextSeq(teamId: string): number {
   const rows = WORK_DB[teamId] ?? [];
   return rows.reduce((max, r) => Math.max(max, r.seq), 0) + 1;

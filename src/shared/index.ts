@@ -1,4 +1,4 @@
-﻿export { Card } from "./ui/components/Card";
+export { Card } from "./ui/components/Card";
 export { StatCard } from "./ui/components/StatCard";
 export { ProgressBar } from "./ui/components/ProgressBar";
 export { Badge } from "./ui/components/Badge";

@@ -1,4 +1,4 @@
-﻿import type { DefectSeverity } from "./constants";
+import type { DefectSeverity } from "./constants";
 
 export interface Product {
   id: string;
@@ -23,9 +23,18 @@ export interface DefectType {
   severity: DefectSeverity;
 }
 
+// Nguyên vật liệu (nguồn cho định mức/BOM)
+export interface Material {
+  id: string;
+  code: string;
+  name: string;
+  unit: string;   // ĐVT
+  price: number;  // đơn giá tham khảo
+}
+
 export type ProductValues = Omit<Product, "id">;
 export type CustomerValues = Omit<Customer, "id">;
 export type DefectValues = Omit<DefectType, "id">;
+export type MaterialValues = Omit<Material, "id">;
 
-// Union tiện cho form động
-export type CatalogItem = Product | Customer | DefectType;
+export type CatalogItem = Product | Customer | DefectType | Material;

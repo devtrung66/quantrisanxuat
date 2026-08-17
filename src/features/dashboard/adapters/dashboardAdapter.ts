@@ -1,4 +1,4 @@
-﻿// MOCK DATA (Phase 1). Sau này thay bằng mapping từ DTO API.
+// MOCK DATA. Sau này thay bằng mapping từ DTO API.
 import type {
   DashboardSummary, OrderInProgress, StageBar, StageQuantity, OrderOption,
 } from "../model/types";
@@ -19,21 +19,25 @@ export function getMockOrders(): OrderInProgress[] {
 
 export function getMockStageBars(): StageBar[] {
   return [
-    { name: "Cắt nguyên liệu", plan: 2000, done: 1950 },
-    { name: "Gia công", plan: 2000, done: 1900 },
+    { name: "Gia công", plan: 2000, done: 1950 },
+    { name: "Chế tạo", plan: 2000, done: 1900 },
     { name: "Lắp ráp", plan: 2000, done: 1850 },
-    { name: "Kiểm tra", plan: 2000, done: 1800 },
-    { name: "Đóng gói", plan: 2000, done: 1750 },
+    { name: "Cơ điện", plan: 2000, done: 1820 },
+    { name: "Sơn", plan: 2000, done: 1800 },
+    { name: "Kiểm tra", plan: 2000, done: 1770 },
+    { name: "Bàn giao", plan: 2000, done: 1750 },
   ];
 }
 
 export function getMockStageQuantities(): StageQuantity[] {
   return [
-    { stage: "1. Cắt nguyên liệu", plan: 2000, standard: 1950, defect: 50, wip: 0, passRate: 97.5 },
-    { stage: "2. Gia công", plan: 2000, standard: 1900, defect: 60, wip: 40, passRate: 95.0 },
+    { stage: "1. Gia công", plan: 2000, standard: 1950, defect: 50, wip: 0, passRate: 97.5 },
+    { stage: "2. Chế tạo", plan: 2000, standard: 1900, defect: 60, wip: 40, passRate: 95.0 },
     { stage: "3. Lắp ráp", plan: 2000, standard: 1850, defect: 70, wip: 80, passRate: 92.5 },
-    { stage: "4. Kiểm tra", plan: 2000, standard: 1800, defect: 40, wip: 160, passRate: 97.83 },
-    { stage: "5. Đóng gói", plan: 2000, standard: 1750, defect: 30, wip: 220, passRate: 98.31 },
+    { stage: "4. Cơ điện", plan: 2000, standard: 1820, defect: 30, wip: 120, passRate: 98.38 },
+    { stage: "5. Sơn", plan: 2000, standard: 1800, defect: 40, wip: 160, passRate: 97.83 },
+    { stage: "6. Kiểm tra", plan: 2000, standard: 1770, defect: 30, wip: 190, passRate: 98.33 },
+    { stage: "7. Bàn giao", plan: 2000, standard: 1750, defect: 20, wip: 220, passRate: 98.87 },
   ];
 }
 

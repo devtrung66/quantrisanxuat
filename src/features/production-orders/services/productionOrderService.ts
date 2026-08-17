@@ -23,6 +23,14 @@ export function validateAllocation(totalQty: number, allocations: { quantity: nu
 }
 
 export const productionOrderService = {
+  async updateAllocation(
+    poId: string, stage: string,
+    patch: { quantity?: number; assignee?: string; state?: "pending" | "active" | "done"; startDate?: string; endDate?: string }
+  ) {
+    const { updateAllocation } = await import("../adapters/productionOrderAdapter");
+    const res = updateAllocation(poId, stage, patch);
+    return new Promise((r) => setTimeout(() => r(res), 200));
+  },
   async list(): Promise<ProductionOrder[]> {
     return delay([...MOCK_PRODUCTION_ORDERS].sort((a, b) => b.createdAt.localeCompare(a.createdAt)));
   },

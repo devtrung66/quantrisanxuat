@@ -1,11 +1,14 @@
-﻿export type ID = string;
+export type ID = string;
 
+// 7 công đoạn chuẩn (đồng bộ toàn app)
 export type StageName =
-  | "Cắt nguyên liệu"
   | "Gia công"
+  | "Chế tạo"
   | "Lắp ráp"
+  | "Cơ điện"
+  | "Sơn"
   | "Kiểm tra"
-  | "Đóng gói";
+  | "Bàn giao";
 
 export interface Paginated<T> {
   items: T[];

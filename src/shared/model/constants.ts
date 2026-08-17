@@ -1,12 +1,7 @@
-﻿import type { StageName } from "./types";
+import { STAGE_NAMES } from "./stages";
 
-export const STAGES: StageName[] = [
-  "Cắt nguyên liệu",
-  "Gia công",
-  "Lắp ráp",
-  "Kiểm tra",
-  "Đóng gói",
-];
+// Giữ export STAGES (mảng tên) cho code cũ đang import từ đây.
+export const STAGES = STAGE_NAMES;
 
 export const STATUS_COLORS = {
   green: "#16a34a",

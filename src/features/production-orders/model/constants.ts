@@ -1,3 +1,5 @@
+import { STAGE_NAMES } from "@shared/model/stages";
+
 export const PO_STATUS = {
   draft: "draft",
   released: "released",
@@ -21,24 +23,18 @@ export const PO_STATUS_TONE: Record<PoStatus, "slate" | "blue" | "amber" | "gree
   done: "green",
 };
 
-// 5 công đoạn chuẩn để phân bổ
-export const ALLOCATION_STAGES = [
-  "Cắt nguyên liệu",
-  "Gia công",
-  "Lắp ráp",
-  "Kiểm tra",
-  "Đóng gói",
-] as const;
+// 7 công đoạn chuẩn để phân bổ (lấy từ nguồn chung @shared)
+export const ALLOCATION_STAGES = STAGE_NAMES;
 
 // --- Điều hướng nội bộ màn chi tiết LSX (sidebar) ---
 export const LSX_SECTION = {
-  general: "general",             // Thông tin chung
-  norm: "norm",                   // Thông tin chi tiết định mức
-  planSxct: "plan-sxct",          // Thông tin kế hoạch SXCT
-  links: "links",                 // Liên kết
-  system: "system",               // Thông tin hệ thống
-  process: "process",             // Quy trình
-  tasks: "tasks",                 // Công việc
+  general: "general",
+  norm: "norm",
+  planSxct: "plan-sxct",
+  links: "links",
+  system: "system",
+  process: "process",
+  tasks: "tasks",
 } as const;
 
 export type LsxSection = (typeof LSX_SECTION)[keyof typeof LSX_SECTION];
@@ -46,15 +42,14 @@ export type LsxSection = (typeof LSX_SECTION)[keyof typeof LSX_SECTION];
 export interface LsxNavItem {
   id: LsxSection;
   label: string;
-  ready: boolean;   // đã build hay chưa (chưa thì render placeholder)
+  ready: boolean;
 }
 
 export interface LsxNavGroup {
-  label: string | null;   // null = mục lẻ không thuộc nhóm
+  label: string | null;
   items: LsxNavItem[];
 }
 
-// Cấu trúc menu đúng như ảnh Cleeksy
 export const LSX_NAV: LsxNavGroup[] = [
   {
     label: "Thông tin LSX",
@@ -80,7 +75,6 @@ export const LSX_NAV: LsxNavGroup[] = [
   },
 ];
 
-// --- Liên kết: nhãn + icon theo loại chứng từ ---
 export const LINK_KIND_LABEL: Record<string, string> = {
   order: "Đơn đặt hàng",
   plan: "Kế hoạch sản xuất",
@@ -88,7 +82,6 @@ export const LINK_KIND_LABEL: Record<string, string> = {
   "product-in": "Phiếu nhập thành phẩm",
 };
 
-// --- Công việc: nhãn + tone trạng thái ---
 export const TASK_STATUS_LABEL: Record<string, string> = {
   todo: "Chưa làm",
   doing: "Đang làm",
@@ -113,7 +106,6 @@ export const TASK_PRIORITY_TONE: Record<string, "slate" | "blue" | "red"> = {
   high: "red",
 };
 
-// --- Công đoạn (Kế hoạch SXCT): tone trạng thái ---
 export const STAGE_STATE_LABEL: Record<string, string> = {
   pending: "Chờ",
   active: "Đang chạy",

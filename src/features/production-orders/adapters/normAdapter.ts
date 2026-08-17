@@ -3,7 +3,17 @@ import type { NormData, NormRow, BtpRow } from "../model/norm.types";
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
-// Dữ liệu gốc cho LSX-001 (khớp ảnh khách)
+// SL sản xuất (số SP) theo từng LSX — để nhân định mức ra số khớp ảnh.
+const LSX_QTY: Record<string, number> = {
+  "1": 18,
+  "2": 30,
+  "4": 25,
+};
+
+export function getLsxQty(poId: string): number {
+  return LSX_QTY[poId] ?? 1;
+}
+
 const NORM_DB: Record<string, NormData> = {
   "1": {
     templates: [
@@ -31,8 +41,8 @@ const NORM_DB: Record<string, NormData> = {
       { id: "b3", code: "BDM-HHVT-020-001", productName: "Sản phẩm B" },
     ],
     nvlRows: buildNvl([
-      { material: "Gỗ MDF 18mm", unit: "Tấm", normPerUnit: 0.3, product: "Sản phẩm B" },
-      { material: "Keo dán gỗ", unit: "Kg", normPerUnit: 0.1, product: "Sản phẩm B" },
+      { material: "Ván MDF phủ Melamine", unit: "Tấm", normPerUnit: 0.3, product: "Sản phẩm B" },
+      { material: "Vít bắt gỗ 4x40", unit: "Cái/Con", normPerUnit: 12, product: "Sản phẩm B" },
     ], 30),
     btpRows: [],
   },
@@ -43,14 +53,12 @@ const NORM_DB: Record<string, NormData> = {
   },
 };
 
-// SL sản xuất (đơn vị: trăm sản phẩm) — giả lập để ra số đẹp như ảnh
-// LSX-001: 18 -> 1.1*18 = 19.8, 2*18 = 36, 7.2*18 = 129.6 (khớp ảnh)
 function buildNvl(
   rows: { material: string; unit: string; normPerUnit: number; btp?: string; product: string }[],
   lsxQty: number
 ): NormRow[] {
   return rows.map((r, i) => ({
-    id: `nvl-${i}`,
+    id: `nvl-${Date.now()}-${i}`,
     material: r.material,
     unit: r.unit,
     normPerUnit: r.normPerUnit,
@@ -76,4 +84,54 @@ function buildBtp(
 
 export function getMockNormData(poId: string): NormData {
   return NORM_DB[poId] ?? { templates: [], nvlRows: [], btpRows: [] };
+}
+
+// ---- Mutations cho định mức NVL (mock in-memory) ----
+
+let RSEQ = 1000;
+function newRowId(): string {
+  RSEQ += 1;
+  return `nvl-new-${RSEQ}`;
+}
+
+export function addNvlRow(
+  poId: string,
+  input: { material: string; unit: string; normPerUnit: number; belongProduct: string; belongBtp?: string }
+): NormRow {
+  const db = NORM_DB[poId] ?? (NORM_DB[poId] = { templates: [], nvlRows: [], btpRows: [] });
+  const qty = getLsxQty(poId);
+  const row: NormRow = {
+    id: newRowId(),
+    material: input.material,
+    unit: input.unit,
+    normPerUnit: input.normPerUnit,
+    qtyByLsx: round2(input.normPerUnit * qty),
+    belongBtp: input.belongBtp,
+    belongProduct: input.belongProduct,
+  };
+  db.nvlRows.push(row);
+  return row;
+}
+
+export function updateNvlRow(
+  poId: string,
+  rowId: string,
+  patch: Partial<Pick<NormRow, "normPerUnit" | "material" | "unit" | "belongProduct" | "belongBtp">>
+): NormRow | undefined {
+  const db = NORM_DB[poId];
+  if (!db) return undefined;
+  const idx = db.nvlRows.findIndex((r) => r.id === rowId);
+  if (idx < 0) return undefined;
+  const qty = getLsxQty(poId);
+  const merged = { ...db.nvlRows[idx], ...patch };
+  merged.qtyByLsx = round2(merged.normPerUnit * qty);
+  db.nvlRows[idx] = merged;
+  return merged;
+}
+
+export function removeNvlRow(poId: string, rowId: string): void {
+  const db = NORM_DB[poId];
+  if (!db) return;
+  const idx = db.nvlRows.findIndex((r) => r.id === rowId);
+  if (idx >= 0) db.nvlRows.splice(idx, 1);
 }

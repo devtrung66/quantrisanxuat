@@ -9,28 +9,24 @@ import { NvlTable } from "./NvlTable";
 import { BtpTable } from "./BtpTable";
 
 export function MaterialNormTable({
-  data, isLoading,
+  data, isLoading, poId,
 }: {
   data: NormData | undefined;
   isLoading: boolean;
+  poId: string;
 }) {
   const [tab, setTab] = useState<NormTabKey>(NORM_TAB.nvl);
-
   if (isLoading) return <Spinner />;
-
   const d = data ?? { templates: [], nvlRows: [], btpRows: [] };
-
   return (
     <section>
       <h3 className="mb-3 text-base font-semibold text-slate-800">Thông tin chi tiết định mức</h3>
-
       <NormTabs active={tab} onChange={setTab} />
-
       {tab === NORM_TAB.nvl ? (
         <div className="mt-4 space-y-5">
           <p className="text-sm font-semibold text-slate-700">Định mức NVL sử dụng</p>
           <BomTemplateList templates={d.templates} />
-          <NvlTable rows={d.nvlRows} />
+          <NvlTable rows={d.nvlRows} poId={poId} />
         </div>
       ) : (
         <div className="mt-4 space-y-5">

@@ -1,51 +1,56 @@
-﻿import { useState } from "react";
-import { Button, Select, formatNumber } from "@shared/index";
-import { productionOrderSchema } from "../../model/schemas";
-import { ALLOCATION_STAGES } from "../../model/constants";
-import type { ProductionOrderValues, StageAllocation, SourceOrder } from "../../model/types";
-import { StageAllocationTable } from "./StageAllocationTable";
+import { useState } from "react";
+import { Button, formatNumber } from "@shared/index";
+import { STAGE_NAMES } from "@shared/model/stages";
+import type { StageAllocation, SourceOrder, ProductionOrderValues } from "../../model/types";
+import { AllocationInputTable } from "./AllocationInputTable";
+
+// Dựng phân bổ 7 công đoạn từ tổng số lượng (giảm dần nhẹ theo hao hụt thực tế)
+const RATIOS = [1, 0.97, 0.94, 0.9, 0.86, 0.82, 0.78];
 
 function buildAllocations(total: number): StageAllocation[] {
-  const per = Math.floor(total / ALLOCATION_STAGES.length);
-  return ALLOCATION_STAGES.map((stage, i) => ({
+  return STAGE_NAMES.map((stage, i) => ({
     stage,
-    quantity: i === 0 ? total : per,   // CĐ đầu = tổng, còn lại chia đều (user chỉnh sau)
+    quantity: Math.round(total * (RATIOS[i] ?? 0.75)),
     startDate: "",
     endDate: "",
+    assignee: "",
+    state: "pending",
   }));
 }
 
 export function ProductionOrderForm({
-  sources, submitting, serverError, onSubmit, onCancel,
+  sources,
+  submitting,
+  serverError,
+  onSubmit,
+  onCancel,
 }: {
   sources: SourceOrder[];
   submitting?: boolean;
   serverError?: string;
-  onSubmit: (v: ProductionOrderValues) => void;
+  onSubmit: (values: ProductionOrderValues) => void;
   onCancel: () => void;
 }) {
   const [orderCode, setOrderCode] = useState("");
-  const [totalQty, setTotalQty] = useState(0);
+  const [totalQty, setTotalQty] = useState<number>(0);
   const [allocations, setAllocations] = useState<StageAllocation[]>([]);
-  const [error, setError] = useState<string>("");
+  const [error, setError] = useState("");
 
-  const orderOptions = [
-    { value: "", label: "-- Chọn đơn hàng nguồn --" },
-    ...sources.map((s) => ({ value: s.code, label: `${s.code} - ${s.customer} - ${s.product} (${formatNumber(s.planQty)})` })),
-  ];
-
+  // Chọn đơn nguồn -> auto điền số lượng + dựng phân bổ (không bắt buộc)
   const pickOrder = (code: string) => {
     setOrderCode(code);
     const src = sources.find((s) => s.code === code);
-    const qty = src?.planQty ?? 0;
-    setTotalQty(qty);
-    setAllocations(buildAllocations(qty));
+    if (src) {
+      setTotalQty(src.planQty);
+      setAllocations(buildAllocations(src.planQty));
+    }
     setError("");
   };
 
-  const changeTotal = (qty: number) => {
-    setTotalQty(qty);
-    setAllocations((prev) => prev.map((a, i) => (i === 0 ? { ...a, quantity: qty } : a)));
+  // Gõ tổng số lượng -> dựng/cập nhật phân bổ ngay (kể cả chưa chọn đơn)
+  const changeTotal = (v: number) => {
+    setTotalQty(v);
+    setAllocations(v > 0 ? buildAllocations(v) : []);
   };
 
   const changeAlloc = (index: number, patch: Partial<StageAllocation>) => {
@@ -53,56 +58,61 @@ export function ProductionOrderForm({
   };
 
   const submit = () => {
-    const payload: ProductionOrderValues = { orderCode, totalQty, allocations };
-    const parsed = productionOrderSchema.safeParse(payload);
-    if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message ?? "Dữ liệu không hợp lệ");
-      return;
-    }
-    if (allocations[0]?.quantity !== totalQty) {
-      setError(`Công đoạn đầu phải bằng tổng số lượng (${totalQty})`);
-      return;
-    }
+    if (totalQty <= 0) { setError("Nhập tổng số lượng (> 0)."); return; }
+    if (allocations.length === 0) { setError("Chưa có phân bổ công đoạn."); return; }
     setError("");
-    onSubmit(parsed.data);
+    onSubmit({
+      orderCode: orderCode || "",
+      totalQty,
+      allocations,
+    });
   };
 
-  const src = sources.find((s) => s.code === orderCode);
+  const inputCls = "w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400";
 
   return (
     <div className="space-y-5">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <label className="block">
-          <span className="mb-1 block text-sm font-medium text-slate-600">Đơn hàng nguồn</span>
-          <Select value={orderCode} options={orderOptions} onChange={pickOrder} className="w-full" />
+          <span className="mb-1 block text-sm font-medium text-slate-600">Đơn hàng nguồn <span className="text-slate-400">(tuỳ chọn)</span></span>
+          <select className={inputCls} value={orderCode} onChange={(e) => pickOrder(e.target.value)}>
+            <option value="">-- Chọn đơn hàng nguồn --</option>
+            {sources.map((s) => (
+              <option key={s.code} value={s.code}>
+                {s.code} — {s.customer} — {s.product} ({formatNumber(s.planQty)})
+              </option>
+            ))}
+          </select>
         </label>
+
         <label className="block">
           <span className="mb-1 block text-sm font-medium text-slate-600">Tổng số lượng</span>
-          <input type="number" min={0} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400"
-            value={totalQty || ""} onChange={(e) => changeTotal(Number(e.target.value))} disabled={!orderCode} />
+          <input
+            type="number"
+            min={0}
+            value={totalQty || ""}
+            onChange={(e) => changeTotal(Number(e.target.value))}
+            placeholder="Nhập tổng số lượng"
+            className={inputCls}
+          />
         </label>
       </div>
 
-      {src && (
-        <div className="rounded-lg bg-slate-50 px-4 py-3 text-sm text-slate-600">
-          Khách hàng: <b>{src.customer}</b> · Sản phẩm: <b>{src.product}</b> · SL kế hoạch: <b>{formatNumber(src.planQty)}</b>
-        </div>
-      )}
-
       {allocations.length > 0 && (
         <div>
-          <h4 className="mb-2 text-sm font-semibold text-slate-700">Phân bổ theo công đoạn</h4>
-          <StageAllocationTable allocations={allocations} totalQty={totalQty} onChange={changeAlloc} />
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-sm font-semibold text-slate-700">Phân bổ theo công đoạn</span>
+            <span className="text-xs text-slate-400">Quy trình: {STAGE_NAMES.join(" → ")}</span>
+          </div>
+          <AllocationInputTable allocations={allocations} totalQty={totalQty} onChange={changeAlloc} />
         </div>
       )}
 
-      {(error || serverError) && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">{error || serverError}</div>
-      )}
+      {(error || serverError) && <p className="text-sm text-red-500">{error || serverError}</p>}
 
       <div className="flex justify-end gap-2 pt-2">
         <Button variant="ghost" onClick={onCancel}>Huỷ</Button>
-        <Button onClick={submit} disabled={submitting || !orderCode}>{submitting ? "Đang tạo..." : "Tạo lệnh sản xuất"}</Button>
+        <Button onClick={submit} disabled={submitting}>{submitting ? "Đang tạo..." : "Tạo lệnh sản xuất"}</Button>
       </div>
     </div>
   );
