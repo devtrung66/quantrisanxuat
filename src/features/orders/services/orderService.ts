@@ -1,4 +1,3 @@
-﻿// Business logic layer. UI/hooks không đụng trực tiếp mock store.
 import type { Order, OrderFilter, OrderFormValues } from "../model/types";
 import { MOCK_ORDERS, nextId } from "../adapters/orderAdapter";
 import { PAGE_SIZE } from "../model/constants";
@@ -21,6 +20,9 @@ export const orderService = {
         (o) =>
           o.code.toLowerCase().includes(kw) ||
           o.customer.toLowerCase().includes(kw) ||
+          o.content.toLowerCase().includes(kw) ||
+          o.chassisNumber.toLowerCase().includes(kw) ||
+          o.containerCode.toLowerCase().includes(kw) ||
           o.product.toLowerCase().includes(kw)
       );
     }
@@ -40,6 +42,10 @@ export const orderService = {
     const order: Order = {
       id: nextId(),
       ...values,
+      containerCode: values.containerCode ?? "",
+      product: values.product ?? "",
+      orderDate: values.orderDate || values.startDate,
+      note: values.note,
       doneQty: 0,
       progress: 0,
     };
@@ -54,6 +60,9 @@ export const orderService = {
     const updated: Order = {
       ...prev,
       ...values,
+      containerCode: values.containerCode ?? "",
+      product: values.product ?? prev.product,
+      orderDate: values.orderDate || prev.orderDate,
       progress: computeProgress(prev.doneQty, values.planQty),
     };
     MOCK_ORDERS[idx] = updated;

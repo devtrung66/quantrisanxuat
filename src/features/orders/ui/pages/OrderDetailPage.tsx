@@ -1,4 +1,4 @@
-﻿import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { PageContainer } from "@shared/ui/layout/PageContainer";
 import { Card, Spinner, EmptyState, Button, ProgressBar, formatNumber, formatDate } from "@shared/index";
 import { useOrderDetail } from "../../hooks/useOrderDetail";
@@ -28,15 +28,17 @@ export function OrderDetailPage() {
         <Button onClick={() => nav(`/orders/${data.id}/edit`)}>Sửa</Button>
       </div>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <Card title={`Đơn hàng ${data.code}`}>
+        <Card title={`LSX ${data.code}`}>
+          <Row label="Nội dung" value={<span className="max-w-[260px] text-right">{data.content}</span>} />
           <Row label="Khách hàng" value={data.customer} />
-          <Row label="Sản phẩm" value={data.product} />
+          <Row label="Số Khung" value={data.chassisNumber} />
+          <Row label="Mã số thùng" value={data.containerCode || "-"} />
           <Row label="Trạng thái" value={<OrderStatusBadge status={data.status} />} />
-          <Row label="Ngày đặt" value={formatDate(data.orderDate)} />
-          <Row label="Hạn giao" value={formatDate(data.dueDate)} />
+          <Row label="Ngày bắt đầu" value={formatDate(data.startDate)} />
+          <Row label="Ngày hoàn thành" value={formatDate(data.dueDate)} />
         </Card>
         <Card title="Sản lượng">
-          <Row label="Kế hoạch" value={formatNumber(data.planQty)} />
+          <Row label="Số lượng" value={formatNumber(data.planQty)} />
           <Row label="Đã hoàn thành" value={formatNumber(data.doneQty)} />
           <div className="pt-4">
             <p className="mb-2 text-sm text-slate-500">Tiến độ</p>
