@@ -82,6 +82,14 @@ function buildBtp(
   }));
 }
 
+
+// Đảm bảo có entry định mức cho poId (tạo rỗng nếu chưa có)
+function ensureNormEntry(poId: string) {
+  if (!NORM_DB[poId]) {
+    NORM_DB[poId] = { templates: [], nvlRows: [], btpRows: [] };
+  }
+  return NORM_DB[poId];
+}
 export function getMockNormData(poId: string): NormData {
   return NORM_DB[poId] ?? { templates: [], nvlRows: [], btpRows: [] };
 }
@@ -134,4 +142,58 @@ export function removeNvlRow(poId: string, rowId: string): void {
   if (!db) return;
   const idx = db.nvlRows.findIndex((r) => r.id === rowId);
   if (idx >= 0) db.nvlRows.splice(idx, 1);
+}
+
+// ==== Áp 1 BĐM mẫu vào định mức LSX (Phần 3+4) ====
+import { getTemplateById } from "./bomTemplateAdapter";
+
+// Ghi định mức từ BĐM mẫu × số lượng vào NORM_DB của LSX.
+// mode "replace": thay toàn bộ định mức hiện có. "append": nối thêm.
+export function applyBomTemplate(
+  poId: string,
+  templateId: string,
+  qty: number,
+  mode: "replace" | "append" = "append"
+): boolean {
+  const tpl = getTemplateById(templateId);
+  if (!tpl) return false;
+
+  const r2 = (n: number) => Math.round(n * 100) / 100;
+  let seq = Date.now();
+
+  const nvl = tpl.nvlLines.map((l) => ({
+    id: `nvl-ap-${++seq}`,
+    material: l.material,
+    unit: l.unit,
+    normPerUnit: l.normPerUnit,
+    qtyByLsx: r2(l.normPerUnit * qty),
+    belongBtp: l.belongBtp,
+    belongProduct: tpl.productName,
+  }));
+
+  const btp = tpl.btpLines.map((l) => ({
+    id: `btp-ap-${++seq}`,
+    btp: l.btp,
+    unit: l.unit,
+    normPerUnit: l.normPerUnit,
+    qtyByLsx: r2(l.normPerUnit * qty),
+    belongProduct: tpl.productName,
+  }));
+
+  const db = getMockNormData(poId); // đảm bảo có entry
+  // getMockNormData trả bản sao/tham chiếu tuỳ cài đặt — ghi thẳng vào NORM_DB
+  const target = ensureNormEntry(poId);
+
+  if (mode === "replace") {
+    target.nvlRows = nvl;
+    target.btpRows = btp;
+    target.templates = [{ id: tpl.id, code: tpl.code, productName: tpl.productName }];
+  } else {
+    target.nvlRows = [...target.nvlRows, ...nvl];
+    target.btpRows = [...target.btpRows, ...btp];
+    if (!target.templates.some((t) => t.id === tpl.id)) {
+      target.templates = [...target.templates, { id: tpl.id, code: tpl.code, productName: tpl.productName }];
+    }
+  }
+  return true;
 }

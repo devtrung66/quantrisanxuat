@@ -1,6 +1,6 @@
 import type { NormData, NormRow } from "../model/norm.types";
 import {
-  getMockNormData, addNvlRow, updateNvlRow, removeNvlRow,
+  getMockNormData, addNvlRow, updateNvlRow, removeNvlRow, applyBomTemplate,
 } from "../adapters/normAdapter";
 
 function delay<T>(v: T, ms = 250): Promise<T> {
@@ -29,5 +29,12 @@ export const normService = {
   async removeNvl(poId: string, rowId: string): Promise<void> {
     removeNvlRow(poId, rowId);
     return delay(undefined);
+  },
+
+  async applyTemplate(
+    poId: string, templateId: string, qty: number, mode: "replace" | "append" = "append"
+  ): Promise<boolean> {
+    const ok = applyBomTemplate(poId, templateId, qty, mode);
+    return delay(ok);
   },
 };
