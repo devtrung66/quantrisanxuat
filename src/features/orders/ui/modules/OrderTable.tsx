@@ -13,7 +13,7 @@ interface Props {
 export function OrderTable({ data, onView, onEdit, onDelete }: Props) {
   const columns: Column<Order>[] = [
     { key: "code", header: "Tên LSX", width: "100px", render: (r) => <span className="font-medium text-slate-800">{r.code}</span> },
-    { key: "content", header: "Nội dung", render: (r) => <span className="block truncate text-slate-600" title={r.content}>{r.content}</span> },
+    { key: "content", header: "Nội dung", width: "260px", render: (r) => <span className="block truncate text-slate-600" title={r.content}>{r.content}</span> },
     { key: "customer", header: "Khách hàng", width: "130px" },
     { key: "chassisNumber", header: "Số Khung", width: "110px", align: "center" },
     { key: "containerCode", header: "Mã số thùng", width: "110px", align: "center" },
