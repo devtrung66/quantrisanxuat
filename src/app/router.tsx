@@ -1,4 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
+import { BomTemplatePage } from "@features/production-orders/ui/pages/BomTemplatePage";
 import { AppLayout } from "@shared/ui/layout/AppLayout";
 import { dashboardRoutes } from "@features/dashboard/router";
 import { orderRoutes } from "@features/orders/router";
@@ -27,6 +28,7 @@ export const router = createBrowserRouter([
     path: "/",
     element: <AppLayout />,
     children: [
+      { path: "/bom-templates", element: <BomTemplatePage /> },
       ...dashboardRoutes,
       ...orderRoutes,
       ...productionOrderRoutes,

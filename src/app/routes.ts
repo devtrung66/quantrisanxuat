@@ -8,6 +8,7 @@ export const ROUTES = {
   stages: "/stages",
   reports: "/reports",
   catalog: "/catalog",
+  bomTemplates: "/bom-templates",
   settings: "/settings",
   workTracking: "/work-tracking",
 } as const;

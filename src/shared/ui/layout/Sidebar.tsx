@@ -1,4 +1,4 @@
-import {
+import { FileText,
   Globe, ClipboardList, PenSquare, Activity, Database, CheckCircle2,
   XCircle, Layers, FileBarChart, ClipboardCheck, FolderTree, Settings, ChevronLeft,
 } from "lucide-react";
@@ -34,6 +34,7 @@ export function Sidebar() {
 
         <SidebarGroup icon={<FolderTree className={ic} />} label="Danh mục" defaultOpen={false}>
           <SidebarItem to={ROUTES.catalog} icon={<FolderTree className="h-4 w-4" />} label="Tất cả danh mục" />
+          <SidebarItem to={ROUTES.bomTemplates} icon={<FileText className="h-4 w-4" />} label="Định mức mẫu" />
         </SidebarGroup>
 
         <SidebarItem to={ROUTES.settings} icon={<Settings className={ic} />} label="Cài đặt" />
